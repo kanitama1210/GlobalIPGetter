@@ -88,8 +88,7 @@ public class GlobalIPGetter {
 			while((line = br.readLine()) != null) {
 				
 				line = line.replaceAll(" ","").replaceAll("　","");
-				System.out.println(line);
-				String[] lines = line.trim().split("=");
+				String[] lines = line.split("=");
 				if("port".equals(lines[0])) {
 					port = lines[1];
 				}
@@ -114,8 +113,6 @@ public class GlobalIPGetter {
 			Toolkit.getDefaultToolkit().getSystemClipboard().setContents(ss, ss);
 			msg = "クリップボードにコピーしました";
 		}
-		
-		System.out.println(ip);
 		
 		DialogGenerator.generateMessageDialog(350,80,15,ip,msg);
 		Toolkit.getDefaultToolkit().beep();
