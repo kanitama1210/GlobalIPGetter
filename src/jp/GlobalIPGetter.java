@@ -2,6 +2,9 @@ package jp;
 import java.awt.Toolkit;
 import java.awt.datatransfer.StringSelection;
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
@@ -74,19 +77,47 @@ public class GlobalIPGetter {
 	}
 	
 	public static void main(String[] args){
-		String ip = getGlobalIP();
-		System.out.println(ip);
 		String msg = "";
+		String port = "";
+		
+		try {
+			FileReader fr = new FileReader(new File("config.conf"));
+			BufferedReader br = new BufferedReader(fr);
+			
+			String line = "";
+			while((line = br.readLine()) != null) {
+				
+				line = line.replaceAll(" ","").replaceAll("　","");
+				System.out.println(line);
+				String[] lines = line.trim().split("=");
+				if("port".equals(lines[0])) {
+					port = lines[1];
+				}
+			}
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			msg = "configファイルが存在しません";
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			msg = "configファイルの読み込みに失敗しました";
+		}
+		
+		String ip = getGlobalIP();
 		
 		if(ip.split("\\.").length != 4)
 			msg = "IPの取得に失敗しました";
 		else {
+			if(!port.isEmpty()) ip += ":" + port;
 			StringSelection ss = new StringSelection(ip);
 			Toolkit.getDefaultToolkit().getSystemClipboard().setContents(ss, ss);
 			msg = "クリップボードにコピーしました";
 		}
 		
-		DialogGenerator.generateMessageDialog(15,ip,msg);
+		System.out.println(ip);
+		
+		DialogGenerator.generateMessageDialog(350,80,15,ip,msg);
 		Toolkit.getDefaultToolkit().beep();
 	}
 }
